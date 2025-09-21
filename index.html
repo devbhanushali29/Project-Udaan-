@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Udaan Translation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+
+    h1 {
+      color: #1a73e8;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 2px #ccc;
+    }
+
+    .input-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input, select {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      width: 200px;
+      transition: border 0.2s;
+    }
+
+    input:focus, select:focus {
+      border: 2px solid #1a73e8;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #155ab6;
+    }
+
+    #result {
+      margin-top: 30px;
+      font-weight: bold;
+      white-space: pre-wrap;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      min-width: 300px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Udaan Translation</h1>
+
+  <div class="input-container">
+    <input type="text" id="text" placeholder="Enter text to translate" />
+    <select id="lang">
+      <option value="hi">Hindi</option>
+      <option value="ta">Tamil</option>
+      <option value="fr">French</option>
+    </select>
+    <button id="translateBtn">Translate</button>
+  </div>
+
+  <div id="result">Result will appear here...</div>
+
+  <script>
+    const button = document.getElementById('translateBtn');
+    const resultDiv = document.getElementById('result');
+
+    button.addEventListener('click', async () => {
+      const text = document.getElementById('text').value.trim();
+      const lang = document.getElementById('lang').value;
+
+      if (!text) {
+        alert('Please enter text to translate!');
+        return;
+      }
+
+      resultDiv.innerText = 'Translating...';
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/translate/get?text=${encodeURIComponent(text)}&target_lang=${lang}`);
+        
+        if (!res.ok) {
+          resultDiv.innerText = `Error: ${res.status} ${res.statusText}`;
+          return;
+        }
+
+        const data = await res.json();
+        resultDiv.innerText = `Original: ${data.original}\nTranslated: ${data.translated}`;
+      } catch (err) {
+        console.error('Fetch error:', err);
+        resultDiv.innerText = 'Error fetching translation. Make sure the backend is running.';
+      }
+    });
+  </script>
+</body>
+</html>
